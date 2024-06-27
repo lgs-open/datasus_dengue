@@ -207,10 +207,10 @@ dic_coluna ={
 coluna = dic_coluna['ano_notif']
 
 # Escolha do(s) ano(s).
-anos = [14]
+anos = [14, 15]
 
 # Escolha da(s) linha(s).
-linhas = lista_linhas # todas as linhas
+linhas = lista_linhas[0:3] # todas as linhas
 
 # Escolha do estado.
 estado = dic_estados['parana']
