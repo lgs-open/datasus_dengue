@@ -1,6 +1,6 @@
 # Web Scraping de dados sobre a dengue disponibilizados pelo DATASUS.
 
-Neste projeto fazemos download dos dados referente a dengue de 2014 em diante no Brasil disponibilizados pelo [DATASUS](https://datasus.saude.gov.br/acesso-a-informacao/doencas-e-agravos-de-notificacao-de-2007-em-diante-sinan/). Algumas observações importantes sobre o arquivo `etl.py`:
+Neste projeto fazemos download dos dados referente a dengue de 2014 em diante no Brasil disponibilizados pelo [DATASUS](https://datasus.saude.gov.br/acesso-a-informacao/doencas-e-agravos-de-notificacao-de-2007-em-diante-sinan/). Algumas observações importantes sobre o arquivo `web_scraping.py`:
 
 1. O arquivo extraído possui a seguinte nomenclatura: `<ano>_<linha>_<coluna>_<estado>.csv`;
 2. É possível escolher 1 das 27 unidades federativas (26 estados e o distrito federal). Essa escolha é feita através do `dic_estados`;
