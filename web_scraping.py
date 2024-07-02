@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import requests
 from urllib import request
 import urllib.request
+import config
 import os
 
 # Definindo o diretório de download.
@@ -35,21 +36,9 @@ def requisicao(pedido: str, path_link: str, estado: str, tentativas = 10) -> req
     data=pedido,
     verify=False,
     )
-    if response.status_code == 200:
-        return response
-    else:
-        for tentativas in tentativas:
-                #time.sleep(0.5)
-                response = requests.post(
-                path_link,
-                cookies=cookies,
-                headers=headers,
-                data=pedido,
-                verify=False,
-                )
-                if response.status_code == 200:
-                    return response
-
+    
+    return response
+    
 
 def extracao(response: requests.models.Response, linha: list, coluna: list, estado:str, ano: int) -> tuple[BeautifulSoup, str]:
     '''Formata o HTML e cria o nome do arquivo sem tipagem.'''
@@ -102,118 +91,18 @@ def parametros(anos, coluna, linhas, estado):
             else:
                 pass
 
-# Dicionário contendo todo os estados brasileiros e o distrito federal.
-dic_estados = {
-    'acre':'ac','alagoas':'al','amapa':'ap', 'amazonas':'am','bahia':'ba',
-    'ceara':'ce', 'distrito_federal':'df', 'espirito_santo':'es','goias':'go',
-    'maranhao': 'ma', 'mato_grosso': 'mt', 'mato_grosso_do_sul':'ms',
-    'minas_gerais':'mg', 'para':'pa', 'paraiba': 'pb', 'parana':'pr', 
-    'pernambuco':'pe', 'piaui':'pi', 'rio_de_janeiro':'rj', 'rio_grande_do_norte':'rn',
-    'rio_grande_do_sul':'rs', 'rondonia':'ro', 'roraima':'rr', 'santa_catarina':'sc',
-    'sao_paulo':'sp', 'sergipe':'se', 'tocantins':'to'
-}
-
-# Lista com as variáveis de linha para a requisição.
-lista_linhas = [
-        ['Ano_1%BA_Sintoma%28s%29', 'ano_1_sintomas'],
-        ['M%EAs_1%BA_Sintoma%28s%29', 'mes_1_sintomas'],
-        ['Semana_epidem._1%BA_Sintomas%28s%29', 'semana_epid_1_sintomas'],
-        ['Ano_notifica%E7%E3o', 'ano_notif'],
-        ['M%EAs_notifica%E7%E3o', 'mes_notif'],
-        ['Semana_epidem._notifica%E7%E3o', 'semana_epid_notif'],
-        ['Ano_epidem._notifica%E7%E3o', 'ano_epid_notif'],
-        ['Ano_epidem._1%BA_Sintomas%28s%29', 'ano_epid_1_sintomas'],
-        ['Munic%EDpio_de_notifica%E7%E3o', 'municipio_notif'],
-        ['Regi%E3o_de_Sa%FAde_%28CIR%29_de_notif', 'regiao_saude_cir'],
-        ['Reg.Sa%FAde%2FMunic%EDpio_de_notific', 'regiao_saude_mun_notif'],
-        ['Macrorreg.de_Sa%FAde_de_notific', 'macro_regiao_saude_notif'],
-        ['Macrorreg.Sa%FAde%2FMunic.de_notif', 'macro_regiao_saude_mun_notif'],
-        ['Div.adm.estadual_de_notific', 'div_adm_estadual_notif'],
-        ['Div.adm.estadual%2FMunic_notific', 'div_adm_estadual_mun'],
-        ['Microrregi%E3o_IBGE_de_notific', 'micro_regiao_ibge_notif'],
-        ['Microrreg_IBGE%2FMunic_notific', 'micro_regiao_igbe_mun_notif'],
-        ['Reg.Metropolit%2FRIDE_de_notific', 'regiao_metro_ride_notif'],
-        ['Munic%EDpio_de_resid%EAncia', 'municipio_resid'],
-        ['Regi%E3o_de_Sa%FAde_%28CIR%29_de_resid', 'regiao_saude_cir_resid'],
-        ['Reg.Sa%FAde%2FMunic%EDpio_de_resid%EAn', 'regiao_saude_mun_resid'],
-        ['Macrorreg.de_Sa%FAde_de_resid%EAnc', 'macro_regiao_saude_resid'],
-        ['Macrorreg.Sa%FAde%2FMunic.de_resid', 'macro_regiao_saude_mun_resid'],
-        ['Div.adm.estadual_de_resid%EAncia', 'divisao_adm_estadual_resid'],
-        ['Div.adm.estadual%2FMunic_resid', 'div_adm_estadual_mun_resid'],
-        ['Microrregi%E3o_IBGE_de_resid%EAnc', 'micro_regiao_ibge_resid'],
-        ['Microrreg_IBGE%2FMunic_resid%EAnc', 'micro_regiao_ibge_mun_resid'],
-        ['Reg.Metropolit%2FRIDE_de_resid', 'regiao_metro_ride_resid'],
-        ['Autoctone_Mun_Res', 'autoctone_mun_res'],
-        ['Pa%EDs_F._infec%E7%E3o', 'pais_f_infeccao'],
-        ['UF_F.infec%E7%E3o&Incremento', 'uf_f_infeccao'],
-        ['Munic%EDpio_infec%E7%E3o', 'municipio_infeccao'],
-        ['Caso_aut%F3ctone_munic_resid', 'caso_autoctone_mun_res'],
-        ['Faixa_Et%E1ria', 'faixa_etaria'],
-        ['Class._Final', 'classe_final'],
-        ['Criterio_conf.', 'criterio_confir'],
-        ['Evolu%E7%E3o', 'evolucao'],
-        ['Exame_sorol%F3gico_%28IgM%29_Dengue', 'exame_soro_lgm_dengue'],
-        ['Exame_sorologia_Elisa________', 'exame_soro_elisa'],
-        ['Exame_isolamento_viral_______', 'exame_isolamento_viral'],
-        ['Exame_de_RT-PCR______________', 'exame_rt_pcr'],
-        ['Sorotipo_____________________', 'sorotipo'],
-        ['Exame_de_Histopatologia______', 'exame_histopatologia'],
-        ['Exame_de_Imunohistoqu%EDmica___', 'exame_imunohistoquimica'],
-        ['Ocorreu_hospitaliza%E7%E3o_______', 'hospitalizacao']
-          ]
-
-# Dicionário contendo as colunas.
-dic_coluna ={
-    'ano_1_sintomas':['Ano_1%BA_Sintoma%28s%29', 'ano_1_sintomas'],
-    'mes_1_sintomas':['M%EAs_1%BA_Sintoma%28s%29', 'mes_1_sintomas'],
-    'semana_epid_1_sintomas':['Semana_epidem._1%BA_Sintomas%28s%29', 'semana_epid_1_sintomas'],
-    'ano_notif':['Ano_notifica%E7%E3o', 'ano_notif'],
-    'mes_notif':['M%EAs_notifica%E7%E3o', 'mes_notif'],
-    'semana_epid_notif':['Semana_epidem._notifica%E7%E3o', 'semana_epid_notif'],
-    'ano_epid_notif':['Ano_epidem._notifica%E7%E3o', 'ano_epid_notif'],
-    'ano_epid_1_sintomas':['Ano_epidem._1%BA_Sintomas%28s%29', 'ano_epid_1_sintomas'],
-    'regiao_saude_cir':['Regi%E3o_de_Sa%FAde_%28CIR%29_de_notif', 'regiao_saude_cir'],
-    'macro_regiao_saude_notif':['Macrorreg.de_Sa%FAde_de_notific', 'macro_regiao_saude_notif'],
-    'div_adm_estadual_notif':['Div.adm.estadual_de_notific', 'div_adm_estadual_notif'],
-    'micro_regiao_ibge_notif':['Microrregi%E3o_IBGE_de_notific', 'micro_regiao_ibge_notif'],
-    'regiao_metro_notif':['Reg.Metropolit%2FRIDE_de_notific', 'regiao_metro_notif'],
-    'regiao_saude_cir_resid':['Regi%E3o_de_Sa%FAde_%28CIR%29_de_resid', 'regiao_saude_cir_resid'],
-    'macro_regiao_saude_resid':['Macrorreg.de_Sa%FAde_de_resid%EAnc', 'macro_regiao_saude_resid'],
-    'divisao_adm_estadual_resid':['Div.adm.estadual_de_resid%EAncia', 'divisao_adm_estadual_resid'],
-    'micro_regiao_ibge_resid':['Microrregi%E3o_IBGE_de_resid%EAnc', 'micro_regiao_ibge_resid'],
-    'regiao_metro_resid':['Reg.Metropolit%2FRIDE_de_resid', 'regiao_metro_resid'],
-    'autoctone_mun_res':['Autoctone_Mun_Res', 'autoctone_mun_res'],
-    'uf_f_infeccao':['UF_F.infec%E7%E3o&Incremento', 'uf_f_infeccao'],
-    'caso_autoctone_mun_res':['Caso_aut%F3ctone_munic_resid', 'caso_autoctone_mun_res'],
-    'faixa_etaria':['Faixa_Et%E1ria', 'faixa_etaria'],
-    'escolaridade':['Escolaridade', 'escolaridade'],
-    'raca':['Ra%E7a', 'raca'],
-    'sexo':['Sexo', 'sexo'],
-    'gestante':['Gestante', 'gestante'],
-    'classe_final':['Class._Final', 'classe_final'],
-    'criterio_confir':['Criterio_conf.', 'criterio_confir'],
-    'evolucao':['Evolu%E7%E3o', 'evolucao'],
-    'exame_soro_lgm_dengue':['Exame_sorol%F3gico_%28IgM%29_Dengue', 'exame_soro_lgm_dengue'],
-    'exame_soro_elisa':['Exame_sorologia_Elisa________', 'exame_soro_elisa'],
-    'exame_isolamento_viral':['Exame_isolamento_viral_______', 'exame_isolamento_viral'],
-    'exame_rt_pcr':['Exame_de_RT-PCR______________', 'exame_rt_pcr'],
-    'sorotipo':['Sorotipo_____________________', 'sorotipo'],
-    'exame_histopatologia':['Exame_de_Histopatologia______', 'exame_histopatologia'],
-    'exame_imunohistoquimica':['Exame_de_Imunohistoqu%EDmica___', 'exame_imunohistoquimica'],
-    'hospitalizacao':['Ocorreu_hospitaliza%E7%E3o_______', 'hospitalizacao']
-}
-
 # Escolha da coluna.
-coluna = dic_coluna['ano_notif']
+coluna = config.dic_coluna['ano_notif']
 
 # Escolha do(s) ano(s).
 anos = [14, 15]
 
 # Escolha da(s) linha(s).
-linhas = lista_linhas[0:3] # todas as linhas
+linhas = config.lista_linhas[0:3] # todas as linhas
 
 # Escolha do estado.
-estado = dic_estados['parana']
+estado = config.dic_estados['parana']
 
 # Pedido dos arquivos.
 parametros(anos, coluna, linhas, estado)
+
