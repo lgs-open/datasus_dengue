@@ -13,7 +13,7 @@ Neste projeto fazemos download dos dados referente a dengue de 2014 em diante no
    - linhas: `ano_1_sintomas`, `mes_1_sintomas` e `semana_epid_1_sintomas`.
 7. O local de download é configurado no parâmetro `dir_raw`.
 
-O arquivo `config.py` carrega informações sobre a configuração de todas as linhas, colunas e dos estados disponíveis para extração.
+O arquivo `config.py` carrega informações sobre todas as linhas (`lista_linhas`), colunas (`dic_coluna`) e dos estados (`dic_estados`) disponíveis para extração.
 
 Sinta-se à vontade para enviar dúvidas e sugestões.
 
